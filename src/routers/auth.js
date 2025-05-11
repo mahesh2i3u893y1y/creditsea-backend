@@ -38,7 +38,11 @@ authRouter.post("/login", async (req,res) => {
         const isPassword = await user.validatePassword(password)
         if(isPassword){
             const token = await user.getJwt()
-            res.cookie("token",token)
+            res.cookie("token", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None"
+  });
             res.status(200).json({
                 message: "Login successful",
                 token,
