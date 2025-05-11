@@ -15,7 +15,7 @@ app.use(express.json())
 app.use(cookieParser())
  
 
-app.use(cors({ origin: "https://majestic-cascaron-cd52a0.netlify.app", credentials: true }));
+app.use(cors({ origin: "https://glittering-manatee-b1f333.netlify.app/", credentials: true }));
 
 app.use("/",authRouter)
 app.use("/",loanRouter)
