@@ -1,0 +1,43 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# dotenv environment variables
+.env
+.env.* 
+
+# Build output
+dist/
+build/
+
+# Cache
+.cache/
+.next/
+.vite/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+
+.vscode/
+.idea/
+
+
+client/build/
+
+
+coverage/
+
+
+uploads/
+public/static/
