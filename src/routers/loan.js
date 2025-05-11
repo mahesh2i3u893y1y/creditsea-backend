@@ -1,9 +1,10 @@
 const express = require("express");
 const { Loan } = require("../models/loans");
-const { authMiddleWare } = require("../middlewares/auth"); // Adjust the path as needed
+const { authMiddleWare } = require("../middlewares/auth"); 
 const loanRouter = express.Router();
 const { Repayment } = require("../models/repayment");
 const mongoose = require("mongoose");
+const crypto = require("crypto");
 
 loanRouter.post("/apply-loan", authMiddleWare, async (req, res) => {
   try {
@@ -17,8 +18,11 @@ loanRouter.post("/apply-loan", authMiddleWare, async (req, res) => {
       employmentAddress,
     } = req.body;
 
-    // Create new loan application
+    // Generate 24-character hex string (like ObjectId)
+    const customId = crypto.randomBytes(12).toString("hex"); // 12 bytes → 24 hex chars
+
     const loan = new Loan({
+      _id: customId,
       userId,
       name,
       amount,
@@ -64,12 +68,12 @@ loanRouter.get("/my-loans", authMiddleWare, async (req, res) => {
   }
 });
 
-// GET all loans - for verifier/admin
+// GET all loans 
 loanRouter.get("/all-loans", async (req, res) => {
   try {
     const loans = await Loan.find({})
-      .populate("userId", "userName email") // optional: populate user info
-      .sort({ updatedAt: -1 }); // latest first
+      .populate("userId", "userName email") 
+      .sort({ updatedAt: -1 }); 
 
     res.status(200).json({ loans });
   } catch (err) {
@@ -80,22 +84,18 @@ loanRouter.get("/all-loans", async (req, res) => {
 loanRouter.post("/verifier/update-status", async (req, res) => {
   try {
     const { status, loanId } = req.body;
-
-    // Allow only 'verified' or 'rejected' status
+    console.log(typeof loanId)
+    
     if (!["verified", "rejected"].includes(status)) {
       return res.status(400).json({ error: "Invalid status update. Allowed: verified or rejected." });
-    }
+    }    
 
-    // Check if loanId is a valid ObjectId
-    // const isValidObjectId = mongoose.Types.ObjectId.isValid(loanId) && loanId.length === 24;
-
-    // Use findOneAndUpdate since findByIdAndUpdate works only with ObjectId
+   
     const updatedLoan = await Loan.findOneAndUpdate(
-      { _id: loanId },  // No need to convert, directly pass the loanId
+      { _id: loanId },  
       { status },
-      { new: true } // returns the updated document
+      { new: true }
     );
-
     if (!updatedLoan) {
       return res.status(404).json({ error: "Loan not found" });
     }
@@ -142,7 +142,7 @@ loanRouter.post("/repayments", async (req, res) => {
   try {
     const { loanId, userId, amountPaid } = req.body;
 
-    // Validate required fields
+    
     if (!loanId || !userId || !amountPaid) {
       return res.status(400).json({
         error: "All fields are required: loanId, userId, amountPaid, paidAt",
